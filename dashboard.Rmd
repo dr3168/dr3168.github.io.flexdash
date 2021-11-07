@@ -1,0 +1,67 @@
+---
+title: "Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    source: embed
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(forcats)
+library(plotly)
+library(p8105.datasets)
+library(patchwork)
+library(flexdashboard)
+```
+
+
+```{r}
+data("instacart")
+```
+```{r}
+instacart=
+  instacart %>%
+  select(aisle, product_name, order_hour_of_day, 
+         department, order_dow) %>%   
+  filter(department=="produce") %>%
+  mutate(aisle= factor(aisle))
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+instacart %>% 
+  count(aisle) %>% 
+  mutate(aisle = fct_reorder(aisle, n)) %>% 
+  plot_ly(x = ~aisle, y = ~n, color = ~aisle, type = "bar")
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+instacart %>% 
+  mutate(aisle= fct_reorder(aisle, order_hour_of_day))%>% 
+  plot_ly(x = ~aisle, y = ~order_hour_of_day, color = ~aisle, type = "box")
+```
+
+### Chart C
+
+```{r}
+instacart %>% 
+  group_by(aisle, order_dow) %>% 
+  mutate(mean_order_hour= mean(order_hour_of_day)) %>% 
+  ungroup() %>% 
+  plot_ly(x = ~order_dow, y = ~mean_order_hour, color = ~aisle)%>%
+  add_lines()
+```
+
