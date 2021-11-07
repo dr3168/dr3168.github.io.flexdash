@@ -4,4 +4,3 @@ navbar:
 title: "Home"
 output:
   html_document:
-  theme: cerulean
